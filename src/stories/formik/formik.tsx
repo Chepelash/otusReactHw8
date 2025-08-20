@@ -1,78 +1,45 @@
-import { Formik, type FormikErrors } from "formik";
+import { Field, Form, Formik } from "formik";
+import * as Yup from "yup";
+import YupPassword from "yup-password";
+YupPassword(Yup);
 
-interface LoginForm {
-  email: string;
-  password: string;
-}
+const LoginSchema = Yup.object().shape({
+  email: Yup.string().email().required("Required"),
+  password: Yup.string()
+    .password()
+    .required("Required")
+    .min(
+      8,
+      "password must contain 8 or more characters with at least one of each: uppercase, lowercase, number and special",
+    )
+    .minLowercase(1, "password must contain at least 1 lower case letter")
+    .minUppercase(1, "password must contain at least 1 upper case letter")
+    .minNumbers(1, "password must contain at least 1 number")
+    .minSymbols(1, "password must contain at least 1 special character"),
+});
 
-export const FormikForm = () => {
+export const LoginForm = () => {
   return (
     <Formik
-      initialValues={{ email: "", password: "" }}
-      validate={(values) => {
-        const errors: FormikErrors<LoginForm> = {};
-
-        if (!values.email) {
-          errors.email = "Required";
-        } else if (
-          !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(values.email)
-        ) {
-          errors.email = "Invalid email address";
-        }
-
-        if (!values.password) {
-          errors.password = "Required";
-        } else if (
-          !/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,})/.test(
-            values.password,
-          )
-        ) {
-          errors.password = "password is too weak";
-        }
-
-        return errors;
+      initialValues={{
+        email: "",
+        password: "",
       }}
-      onSubmit={(values, { setSubmitting }) => {
-        console.log(values);
-        setSubmitting(false);
+      validationSchema={LoginSchema}
+      onSubmit={(values) => {
+        console.log(JSON.stringify(values, null, 2));
       }}
     >
-      {({
-        values,
-        errors,
-        touched,
-        handleChange,
-        handleBlur,
-        handleSubmit,
-        isSubmitting,
-        /* and other goodies */
-      }) => (
-        <form onSubmit={handleSubmit}>
+      {({ errors, touched }) => (
+        <Form>
           <label>email</label>
-          <input
-            type="email"
-            name="email"
-            onChange={handleChange}
-            onBlur={handleBlur}
-            value={values.email}
-          />
-
-          {errors.email && touched.email && errors.email}
+          <Field type="email" name="email" />
+          {errors.email && touched.email && <div>{errors.email}</div>}
           <label>password</label>
-          <input
-            type="password"
-            name="password"
-            onChange={handleChange}
-            onBlur={handleBlur}
-            value={values.password}
-          />
-
-          {errors.password && touched.password && errors.password}
-
-          <button type="submit" disabled={isSubmitting}>
-            Login
-          </button>
-        </form>
+          <Field type="password" name="password" />
+          {errors.password && touched.password && <div>{errors.password}</div>}
+          <button type="submit">Submit</button>
+        </Form>
       )}
     </Formik>
   );

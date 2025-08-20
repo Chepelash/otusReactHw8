@@ -8,7 +8,7 @@ type ContactFormType = {
   preference: string;
 };
 
-export const FormVanila = () => {
+export const ContactForm = () => {
   const [formData, setFormData] = useState<ContactFormType>({
     name: "",
     email: "",

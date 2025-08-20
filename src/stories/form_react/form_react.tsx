@@ -5,7 +5,7 @@ interface ItemForm {
   itemQuantity: number;
 }
 
-export const FormReact = () => {
+export const ItemForm = () => {
   const {
     register,
     handleSubmit,
